@@ -1,67 +1,18 @@
-const pages = document.querySelectorAll(".page");
-const navButtons = document.querySelectorAll("nav button");
-const hero = document.querySelector(".hero");
+const pages=document.querySelectorAll(".page");const navButtons=document.querySelectorAll("nav button");
+function go(pageId){pages.forEach(page=>page.classList.toggle("active",page.id===pageId));navButtons.forEach(button=>button.classList.toggle("on",button.dataset.page===pageId));window.scrollTo(0,0);}
+navButtons.forEach(button=>button.addEventListener("click",()=>go(button.dataset.page)));
 
-function go(pageId) {
-  pages.forEach((page) => {
-    page.classList.toggle("active", page.id === pageId);
-  });
+const professions={
+pflege:{title:"Pflegefachfrau / Pflegefachmann",desc:"Hastaneler, bakım merkezleri ve sağlık kuruluşlarında insanlara profesyonel bakım ve destek sunulan bir Ausbildung alanı.",duration:"Genellikle 3 yıl",language:"İşveren ve eyalete göre değişir",pay:"Kuruma ve toplu sözleşmeye göre değişir"},
+kfz:{title:"Kfz-Mechatroniker/in",desc:"Araçların mekanik, elektronik ve dijital sistemlerinin bakım, arıza tespiti ve onarımı üzerine teknik bir Ausbildung.",duration:"Genellikle 3,5 yıl",language:"İşveren şartına göre değişir",pay:"İşveren ve eğitim yılına göre değişir"},
+elektronik:{title:"Elektroniker/in",desc:"Elektrik sistemlerinin kurulumu, bakımı ve arıza giderme süreçlerinde çalışılan teknik bir meslek alanı.",duration:"Genellikle 3,5 yıl",language:"İşveren şartına göre değişir",pay:"Alan, işveren ve eğitim yılına göre değişir"},
+hotel:{title:"Hotelfachfrau / Hotelfachmann",desc:"Otel işletmesinde misafir hizmetleri, rezervasyon, organizasyon ve farklı operasyon alanlarını kapsayan bir Ausbildung.",duration:"Genellikle 3 yıl",language:"Yoğun iletişim nedeniyle işveren şartı önemlidir",pay:"İşveren ve eğitim yılına göre değişir"},
+lager:{title:"Fachkraft für Lagerlogistik",desc:"Ürün kabulü, depolama, sevkiyat hazırlığı ve lojistik süreçlerin düzenlenmesini kapsayan bir Ausbildung.",duration:"Genellikle 3 yıl",language:"İşveren şartına göre değişir",pay:"İşveren ve eğitim yılına göre değişir"},
+anlagen:{title:"Anlagenmechaniker/in SHK",desc:"Isıtma, sıhhi tesisat ve iklimlendirme sistemlerinin kurulumu, bakımı ve onarımına odaklanan teknik Ausbildung.",duration:"Genellikle 3,5 yıl",language:"İşveren şartına göre değişir",pay:"İşveren ve eğitim yılına göre değişir"}};
 
-  navButtons.forEach((button) => {
-    button.classList.toggle("on", button.dataset.page === pageId);
-  });
+function showProfession(key){const p=professions[key];const box=document.getElementById("profession-detail");if(!p||!box)return;box.hidden=false;box.innerHTML=`<div class="detail-top"><div><span class="eyebrow" style="color:var(--teal)">MESLEK DETAYI</span><h2>${p.title}</h2><p>${p.desc}</p></div><button class="detail-close" onclick="closeProfession()" aria-label="Kapat">×</button></div><div class="detail-facts"><div><small>Ausbildung süresi</small><b>${p.duration}</b></div><div><small>Almanca</small><b>${p.language}</b></div><div><small>Ausbildungsvergütung</small><b>${p.pay}</b></div></div><p class="detail-note">Kesin şartlar ve ücretler ilan, işveren, bölge ve eğitim yılına göre değişebilir.</p><button class="detail-apply" onclick="startApplication('${p.title.replace(/'/g,"\\'")}')">Bu meslek için başvur →</button>`;box.scrollIntoView({behavior:"smooth",block:"start"});}
+function closeProfession(){const box=document.getElementById("profession-detail");if(box)box.hidden=true;}
+function startApplication(title){go("basvuru");const heading=document.querySelector("#basvuru .panel h3");if(heading)heading.textContent=title+" için başvurunu başlat";}
 
-  if (pageId === "home") {
-    hero.style.display = "block";
-  } else {
-    hero.style.display = "none";
-  }
-
-  window.scrollTo(0, 0);
-}
-
-navButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    go(button.dataset.page);
-  });
-});
-
-/* PWA Service Worker */
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js");
-  });
-}
-
-/* Android / Chrome uygulama yükleme */
-let deferredPrompt;
-const installButton = document.getElementById("install");
-
-window.addEventListener("beforeinstallprompt", (event) => {
-  event.preventDefault();
-  deferredPrompt = event;
-
-  if (installButton) {
-    installButton.hidden = false;
-  }
-});
-
-if (installButton) {
-  installButton.addEventListener("click", async () => {
-    if (!deferredPrompt) return;
-
-    deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
-
-    deferredPrompt = null;
-    installButton.hidden = true;
-  });
-}
-
-window.addEventListener("appinstalled", () => {
-  deferredPrompt = null;
-
-  if (installButton) {
-    installButton.hidden = true;
-  }
-});
+if("serviceWorker"in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js"));}
+let deferredPrompt;const installButton=document.getElementById("install");window.addEventListener("beforeinstallprompt",event=>{event.preventDefault();deferredPrompt=event;if(installButton)installButton.hidden=false;});if(installButton)installButton.addEventListener("click",async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;installButton.hidden=true;});window.addEventListener("appinstalled",()=>{deferredPrompt=null;if(installButton)installButton.hidden=true;});
