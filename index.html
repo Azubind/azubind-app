@@ -55,13 +55,14 @@
   <section id="meslekler" class="page inner-page">
     <div class="page-title"><span>KEŞFET</span><h1>Ausbildung Alanları</h1><p>İlgi alanına uygun meslek grubunu seç ve yolculuğuna başla.</p></div>
     <div class="profession-grid">
-      <article><i>✚</i><b>Sağlık</b><small>Bakım ve sağlık meslekleri</small></article>
-      <article><i>⚙</i><b>Otomotiv</b><small>Teknik ve araç teknolojileri</small></article>
-      <article><i>ϟ</i><b>Elektrik</b><small>Elektrik ve elektronik</small></article>
-      <article><i>⌂</i><b>Gastronomi</b><small>Otel ve restoran meslekleri</small></article>
-      <article><i>□</i><b>Lojistik</b><small>Depo ve taşımacılık</small></article>
-      <article><i>⌁</i><b>Teknik Meslekler</b><small>Üretim ve teknik alanlar</small></article>
+      <article onclick="showProfession('pflege')"><i>✚</i><b>Pflegefachfrau / Pflegefachmann</b><small>Bakım ve sağlık</small><span>Detayları gör →</span></article>
+      <article onclick="showProfession('kfz')"><i>⚙</i><b>Kfz-Mechatroniker/in</b><small>Otomotiv teknolojileri</small><span>Detayları gör →</span></article>
+      <article onclick="showProfession('elektronik')"><i>ϟ</i><b>Elektroniker/in</b><small>Elektrik ve elektronik</small><span>Detayları gör →</span></article>
+      <article onclick="showProfession('hotel')"><i>⌂</i><b>Hotelfachfrau / Hotelfachmann</b><small>Otel ve gastronomi</small><span>Detayları gör →</span></article>
+      <article onclick="showProfession('lager')"><i>□</i><b>Fachkraft für Lagerlogistik</b><small>Lojistik ve depo</small><span>Detayları gör →</span></article>
+      <article onclick="showProfession('anlagen')"><i>⌁</i><b>Anlagenmechaniker/in SHK</b><small>Teknik ve tesisat</small><span>Detayları gör →</span></article>
     </div>
+    <div id="profession-detail" class="profession-detail" hidden></div>
   </section>
 
   <section id="basvuru" class="page inner-page">
