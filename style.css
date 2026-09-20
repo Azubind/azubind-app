@@ -1,0 +1,175 @@
+:root {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #123c5a;
+  background: #f5f8f7;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding-bottom: 85px;
+  background: #f5f8f7;
+}
+
+header {
+  height: 72px;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  border-bottom: 1px solid #e2ebe8;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+header img {
+  width: 48px;
+  height: 48px;
+}
+
+header b {
+  font-size: 22px;
+}
+
+header small {
+  display: block;
+  color: #71827c;
+}
+
+#install {
+  margin-left: auto;
+  border: 0;
+  border-radius: 12px;
+  padding: 10px 14px;
+  background: #7dbb20;
+  color: white;
+  font-weight: bold;
+}
+
+main {
+  max-width: 1050px;
+  margin: auto;
+  padding: 20px;
+}
+
+.hero {
+  background: linear-gradient(135deg, #0b4965, #147477);
+  color: white;
+  padding: 45px;
+  border-radius: 28px;
+  box-shadow: 0 12px 30px rgba(18, 60, 90, 0.15);
+}
+
+.hero span {
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+}
+
+.hero h1 {
+  font-size: clamp(38px, 7vw, 68px);
+  line-height: 1.05;
+  margin: 18px 0;
+}
+
+.hero p {
+  max-width: 620px;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.hero button {
+  border: 0;
+  border-radius: 14px;
+  padding: 14px 20px;
+  margin: 5px 5px 5px 0;
+  background: #7dbb20;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.page {
+  display: none;
+  padding: 28px 2px;
+}
+
+.page.active {
+  display: block;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.cards article,
+.page > article {
+  background: white;
+  padding: 22px;
+  border-radius: 20px;
+  box-shadow: 0 5px 18px rgba(18, 60, 90, 0.08);
+}
+
+.cards p,
+.page p {
+  color: #647670;
+  line-height: 1.6;
+}
+
+nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  min-height: 72px;
+  background: white;
+  border-top: 1px solid #dce7e3;
+  display: flex;
+  justify-content: center;
+  z-index: 20;
+}
+
+nav button {
+  width: min(20%, 170px);
+  border: 0;
+  background: transparent;
+  color: #6f817b;
+  padding: 12px 5px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+nav button.on {
+  color: #137071;
+  font-weight: bold;
+}
+
+@media (max-width: 650px) {
+  main {
+    padding: 12px;
+  }
+
+  .hero {
+    padding: 30px 22px;
+    border-radius: 22px;
+  }
+
+  .hero p {
+    font-size: 16px;
+  }
+
+  .cards {
+    grid-template-columns: 1fr;
+  }
+
+  nav button {
+    font-size: 10px;
+  }
+}
