@@ -1,20 +1,92 @@
 <!doctype html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#123c5a"><meta name="description" content="Azubind - Almanya'da Ausbildung yolculuğun için başvuru ve kariyer platformu.">
-<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png" type="image/png">
-<title>Azubind App</title><link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b4f67">
+  <meta name="description" content="Azubind - Almanya'da Ausbildung yolculuğun için başvuru ve kariyer platformu.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <title>Azubind App</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header><img src="icon-192.png" alt="Azubind"><div><b>AZUBIND</b><small>Geleceğini Almanya'ya bağla.</small></div><button id="install" hidden>Uygulamayı Yükle</button></header>
+<header class="topbar">
+  <div class="brand"><img src="icon-192.png" alt="Azubind"><div><b>AZUBIND</b><small>Geleceğini Almanya'ya bağla.</small></div></div>
+  <button id="install" hidden>Uygulamayı Yükle</button>
+</header>
+
 <main>
-<section class="hero"><span>🇩🇪 ALMANYA'DA AUSBILDUNG</span><h1>Mesleki geleceğine<br>ilk adımı at.</h1><p>Meslekleri keşfet, başvuru hazırlığını planla ve Azubind desteğine tek yerden ulaş.</p><div class="actions"><button onclick="go('meslekler')">Ausbildung Bul</button><button class="ghost" onclick="go('basvuru')">Başvuru Yap</button></div></section>
-<section id="home" class="page active"><h2>Azubind ile yolculuğun</h2><div class="steps"><article><b>1</b><h3>Mesleğini keşfet</h3><p>Sana uygun Ausbildung alanlarını incele.</p></article><article><b>2</b><h3>Başvurunu hazırla</h3><p>CV ve başvuru sürecini planla.</p></article><article><b>3</b><h3>Almanya'ya hazırlan</h3><p>Yerleşim ve sonraki adımlar için destek al.</p></article></div></section>
-<section id="meslekler" class="page"><h2>Ausbildung Alanları</h2><div class="cards"><article>⚕️<b>Sağlık</b></article><article>🚗<b>Otomotiv</b></article><article>⚡<b>Elektrik</b></article><article>🍽️<b>Gastronomi</b></article><article>📦<b>Lojistik</b></article><article>🔧<b>Teknik Meslekler</b></article></div></section>
-<section id="basvuru" class="page"><h2>Başvuru</h2><div class="panel"><h3>Ausbildung yolculuğunu başlat</h3><p>İlk sürümde bu alan Azubind iletişim kanalına yönlendirilecek. Sonraki aşamada hesap, belge yükleme ve başvuru takibi eklenebilir.</p><a class="button" href="https://azubind.com/" target="_blank" rel="noopener">Azubind ile İletişime Geç</a></div></section>
-<section id="takip" class="page"><h2>Başvurularım</h2><div class="panel"><h3>Yakında</h3><p>Güvenli kullanıcı hesabı ve başvuru durum takibi ikinci aşamada eklenecek.</p></div></section>
-<section id="profil" class="page"><h2>Profil</h2><div class="panel"><h3>Azubind Aday Profili</h3><p>Profil, CV ve belgeler için güvenli altyapıyı sonraki aşamada kuracağız.</p></div></section>
+  <section id="home" class="page active">
+    <section class="hero">
+      <div class="eyebrow">ALMANYA'DA AUSBILDUNG</div>
+      <h1>Geleceğini Almanya’ya bağla.</h1>
+      <p>Mesleğini keşfet, başvurunu hazırla ve Ausbildung yolculuğunu Azubind ile adım adım yönet.</p>
+      <div class="actions">
+        <button class="primary" onclick="go('meslekler')">Ausbildung keşfet <span>→</span></button>
+        <button class="secondary" onclick="go('basvuru')">Başvurunu başlat</button>
+      </div>
+    </section>
+
+    <section class="quick">
+      <div class="section-head"><div><span>HIZLI ERİŞİM</span><h2>Bugün ne yapmak istiyorsun?</h2></div></div>
+      <div class="quick-grid">
+        <button class="quick-card" onclick="go('meslekler')"><i>⌕</i><strong>Ausbildung Ara</strong><small>Sana uygun meslekleri keşfet</small><b>→</b></button>
+        <button class="quick-card" onclick="go('takip')"><i>✓</i><strong>Başvuru Sürecim</strong><small>Adımlarını ve durumunu takip et</small><b>→</b></button>
+        <button class="quick-card" onclick="go('profil')"><i>▤</i><strong>CV & Belgeler</strong><small>Profil ve belgelerini hazırla</small><b>→</b></button>
+        <button class="quick-card" onclick="go('basvuru')"><i>♡</i><strong>Azubind Destek</strong><small>Yolculuğunda destek al</small><b>→</b></button>
+      </div>
+    </section>
+
+    <section class="journey">
+      <div class="section-head"><div><span>YOL HARİTAN</span><h2>Almanya yolculuğun</h2></div><em>5 adım</em></div>
+      <div class="progress"><div></div></div>
+      <div class="journey-steps">
+        <article class="current"><b>1</b><strong>Meslek seçimi</strong><small>Sana uygun alanı bul</small></article>
+        <article><b>2</b><strong>Başvuru</strong><small>Dosyanı hazırla</small></article>
+        <article><b>3</b><strong>Görüşme</strong><small>İşverenle tanış</small></article>
+        <article><b>4</b><strong>Sözleşme</strong><small>Ausbildung yerini al</small></article>
+        <article><b>5</b><strong>Almanya</strong><small>Yeni hayatına başla</small></article>
+      </div>
+    </section>
+  </section>
+
+  <section id="meslekler" class="page inner-page">
+    <div class="page-title"><span>KEŞFET</span><h1>Ausbildung Alanları</h1><p>İlgi alanına uygun meslek grubunu seç ve yolculuğuna başla.</p></div>
+    <div class="profession-grid">
+      <article><i>✚</i><b>Sağlık</b><small>Bakım ve sağlık meslekleri</small></article>
+      <article><i>⚙</i><b>Otomotiv</b><small>Teknik ve araç teknolojileri</small></article>
+      <article><i>ϟ</i><b>Elektrik</b><small>Elektrik ve elektronik</small></article>
+      <article><i>⌂</i><b>Gastronomi</b><small>Otel ve restoran meslekleri</small></article>
+      <article><i>□</i><b>Lojistik</b><small>Depo ve taşımacılık</small></article>
+      <article><i>⌁</i><b>Teknik Meslekler</b><small>Üretim ve teknik alanlar</small></article>
+    </div>
+  </section>
+
+  <section id="basvuru" class="page inner-page">
+    <div class="page-title"><span>BAŞVURU</span><h1>İlk adımı birlikte atalım.</h1><p>Azubind ekibi Ausbildung hedefin için sonraki adımları planlamanda destek olur.</p></div>
+    <div class="panel"><div class="panel-icon">→</div><div><h3>Başvurunu başlat</h3><p>İletişim kanalımız üzerinden bize ulaş ve sürecini başlat.</p><a class="link-button" href="https://azubind.com/" target="_blank" rel="noopener">Azubind ile iletişime geç</a></div></div>
+  </section>
+
+  <section id="takip" class="page inner-page">
+    <div class="page-title"><span>SÜRECİM</span><h1>Başvurularım</h1><p>Başvuru takibi ve kişisel durum ekranı güvenli kullanıcı sistemiyle birlikte eklenecek.</p></div>
+    <div class="panel"><div class="panel-icon">✓</div><div><h3>Başvuru takibi yakında</h3><p>İleride başvurularını ve süreç adımlarını buradan takip edebileceksin.</p></div></div>
+  </section>
+
+  <section id="profil" class="page inner-page">
+    <div class="page-title"><span>PROFİL</span><h1>Azubind Aday Profili</h1><p>CV, belgeler ve kişisel profil alanı güvenli altyapıyla birlikte eklenecek.</p></div>
+    <div class="panel"><div class="panel-icon">○</div><div><h3>Profil & Belgeler</h3><p>Kişisel veriler için güvenli sistem kurulmadan bu alanda belge saklanmayacaktır.</p></div></div>
+  </section>
 </main>
-<nav><button data-page="home" class="on">⌂<span>Ana Sayfa</span></button><button data-page="meslekler">⌕<span>Ausbildung</span></button><button data-page="basvuru">＋<span>Başvuru</span></button><button data-page="takip">▤<span>Başvurularım</span></button><button data-page="profil">○<span>Profil</span></button></nav>
-<script src="app.js"></script></body></html>
+
+<nav class="bottom-nav">
+  <button data-page="home" class="on"><i>⌂</i><span>Ana Sayfa</span></button>
+  <button data-page="meslekler"><i>⌕</i><span>Ausbildung</span></button>
+  <button data-page="basvuru" class="nav-main"><i>＋</i><span>Başvuru</span></button>
+  <button data-page="takip"><i>▤</i><span>Sürecim</span></button>
+  <button data-page="profil"><i>○</i><span>Profil</span></button>
+</nav>
+<script src="app.js"></script>
+</body>
+</html>
