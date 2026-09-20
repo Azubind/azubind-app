@@ -67,7 +67,24 @@
 
   <section id="basvuru" class="page inner-page">
     <div class="page-title"><span>BAŞVURU</span><h1>İlk adımı birlikte atalım.</h1><p>Azubind ekibi Ausbildung hedefin için sonraki adımları planlamanda destek olur.</p></div>
-    <div class="panel"><div class="panel-icon">→</div><div><h3>Başvurunu başlat</h3><p>İletişim kanalımız üzerinden bize ulaş ve sürecini başlat.</p><a class="link-button" href="https://azubind.com/" target="_blank" rel="noopener">Azubind ile iletişime geç</a></div></div>
+    <div class="application-shell">
+      <div class="form-intro"><div><span>ADAY ÖN BAŞVURU</span><h3 id="application-title">Başvurunu başlat</h3><p>Bilgilerini hazırlayabileceğin ön başvuru ekranı. Bu sürüm henüz verileri sunucuya göndermez veya kaydetmez.</p></div><div class="secure-note">🔒 Taslak mod</div></div>
+      <form id="application-form">
+        <div class="form-grid">
+          <label><span>Ad Soyad</span><input type="text" name="fullName" autocomplete="name" placeholder="Adın ve soyadın"></label>
+          <label><span>Doğum yılı</span><input type="number" name="birthYear" min="1950" max="2010" inputmode="numeric" placeholder="Örn. 2002"></label>
+          <label><span>Yaşadığın şehir</span><input type="text" name="city" autocomplete="address-level2" placeholder="Örn. İstanbul"></label>
+          <label><span>E-posta</span><input type="email" name="email" autocomplete="email" placeholder="ornek@email.com"></label>
+          <label><span>Telefon</span><input type="tel" name="phone" autocomplete="tel" placeholder="+90 ..."></label>
+          <label><span>Almanca seviyesi</span><select name="german"><option value="">Seçiniz</option><option>A1</option><option>A2</option><option>B1</option><option>B2</option><option>C1+</option><option>Henüz başlamadım</option></select></label>
+          <label><span>Eğitim durumu</span><select name="education"><option value="">Seçiniz</option><option>Lise öğrencisi</option><option>Lise mezunu</option><option>Üniversite öğrencisi</option><option>Üniversite mezunu</option><option>Diğer</option></select></label>
+          <label><span>İlgilendiğin Ausbildung</span><select id="profession-select" name="profession"><option value="">Seçiniz</option><option>Pflegefachfrau / Pflegefachmann</option><option>Kfz-Mechatroniker/in</option><option>Elektroniker/in</option><option>Hotelfachfrau / Hotelfachmann</option><option>Fachkraft für Lagerlogistik</option><option>Anlagenmechaniker/in SHK</option></select></label>
+          <label class="wide"><span>CV durumun</span><select name="cv"><option value="">Seçiniz</option><option>CV'm hazır</option><option>CV'm var, düzenlenmesi gerekiyor</option><option>Henüz CV hazırlamadım</option></select></label>
+        </div>
+        <div class="form-footer"><p>Şimdilik “Kontrol Et” yalnızca form arayüzünü test eder. Bilgilerin hiçbir yere gönderilmez.</p><button type="submit">Bilgileri kontrol et →</button></div>
+        <div id="form-message" class="form-message" hidden></div>
+      </form>
+    </div>
   </section>
 
   <section id="takip" class="page inner-page">
