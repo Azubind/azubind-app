@@ -14,7 +14,7 @@
 <body>
 <header class="topbar">
   <div class="brand"><img src="icon-192.png" alt="Azubind"><div><b>AZUBIND</b><small>Geleceğini Almanya'ya bağla.</small></div></div>
-  <button id="install" hidden>Uygulamayı Yükle</button>
+  <div class="top-actions"><button id="account-button" class="account-button" onclick="go('profil')">Giriş Yap</button><button id="install" hidden>Uygulamayı Yükle</button></div>
 </header>
 
 <main>
@@ -68,7 +68,7 @@
   <section id="basvuru" class="page inner-page">
     <div class="page-title"><span>BAŞVURU</span><h1>İlk adımı birlikte atalım.</h1><p>Azubind ekibi Ausbildung hedefin için sonraki adımları planlamanda destek olur.</p></div>
     <div class="application-shell">
-      <div class="form-intro"><div><span>ADAY ÖN BAŞVURU</span><h3 id="application-title">Başvurunu başlat</h3><p>Bilgilerini hazırlayabileceğin ön başvuru ekranı. Bu sürüm henüz verileri sunucuya göndermez veya kaydetmez.</p></div><div class="secure-note">🔒 Taslak mod</div></div>
+      <div class="form-intro"><div><span>ADAY BAŞVURUSU</span><h3 id="application-title">Başvurunu başlat</h3><p>Başvurunu güvenli hesabınla gönder. Bilgilerin kendi kullanıcı hesabınla ilişkilendirilir.</p></div><div class="secure-note">🔒 Güvenli başvuru</div></div>
       <form id="application-form">
         <div class="form-grid">
           <label><span>Ad Soyad</span><input type="text" name="fullName" autocomplete="name" placeholder="Adın ve soyadın"></label>
@@ -81,20 +81,28 @@
           <label><span>İlgilendiğin Ausbildung</span><select id="profession-select" name="profession"><option value="">Seçiniz</option><option>Pflegefachfrau / Pflegefachmann</option><option>Kfz-Mechatroniker/in</option><option>Elektroniker/in</option><option>Hotelfachfrau / Hotelfachmann</option><option>Fachkraft für Lagerlogistik</option><option>Anlagenmechaniker/in SHK</option></select></label>
           <label class="wide"><span>CV durumun</span><select name="cv"><option value="">Seçiniz</option><option>CV'm hazır</option><option>CV'm var, düzenlenmesi gerekiyor</option><option>Henüz CV hazırlamadım</option></select></label>
         </div>
-        <div class="form-footer"><p>Şimdilik “Kontrol Et” yalnızca form arayüzünü test eder. Bilgilerin hiçbir yere gönderilmez.</p><button type="submit">Bilgileri kontrol et →</button></div>
+        <div class="form-footer"><p>Başvuruyu göndermek için giriş yapmış olman gerekir.</p><button type="submit">Başvuruyu gönder →</button></div>
         <div id="form-message" class="form-message" hidden></div>
       </form>
     </div>
   </section>
 
   <section id="takip" class="page inner-page">
-    <div class="page-title"><span>SÜRECİM</span><h1>Başvurularım</h1><p>Başvuru takibi ve kişisel durum ekranı güvenli kullanıcı sistemiyle birlikte eklenecek.</p></div>
-    <div class="panel"><div class="panel-icon">✓</div><div><h3>Başvuru takibi yakında</h3><p>İleride başvurularını ve süreç adımlarını buradan takip edebileceksin.</p></div></div>
+    <div class="page-title"><span>SÜRECİM</span><h1>Başvurum</h1><p>Gönderdiğin başvurunun güncel durumunu buradan takip edebilirsin.</p></div>
+    <div id="application-status" class="panel"><div class="panel-icon">✓</div><div><h3>Başvuru bilgisi</h3><p>Durumunu görmek için hesabına giriş yap.</p></div></div>
   </section>
 
   <section id="profil" class="page inner-page">
-    <div class="page-title"><span>PROFİL</span><h1>Azubind Aday Profili</h1><p>CV, belgeler ve kişisel profil alanı güvenli altyapıyla birlikte eklenecek.</p></div>
-    <div class="panel"><div class="panel-icon">○</div><div><h3>Profil & Belgeler</h3><p>Kişisel veriler için güvenli sistem kurulmadan bu alanda belge saklanmayacaktır.</p></div></div>
+    <div class="page-title"><span>HESABIM</span><h1>Azubind Hesabı</h1><p>Kayıt ol, e-postanı doğrula ve başvurunu kendi hesabından yönet.</p></div>
+    <div id="auth-shell" class="auth-shell">
+      <div id="auth-guest">
+        <div class="auth-tabs"><button type="button" class="on" data-auth-tab="login">Giriş Yap</button><button type="button" data-auth-tab="signup">Kayıt Ol</button></div>
+        <form id="login-form" class="auth-form"><label><span>E-posta</span><input type="email" name="email" autocomplete="email" required></label><label><span>Şifre</span><input type="password" name="password" autocomplete="current-password" minlength="6" required></label><button type="submit">Giriş Yap</button></form>
+        <form id="signup-form" class="auth-form" hidden><label><span>E-posta</span><input type="email" name="email" autocomplete="email" required></label><label><span>Şifre</span><input type="password" name="password" autocomplete="new-password" minlength="6" required></label><button type="submit">Kayıt Ol</button><small>Kayıttan sonra e-posta adresine gelen doğrulama bağlantısına tıkla.</small></form>
+        <div id="auth-message" class="form-message" hidden></div>
+      </div>
+      <div id="auth-user" hidden><div class="panel"><div class="panel-icon">○</div><div><h3>Hesabın açık</h3><p id="user-email"></p><button id="logout-button" class="outline-button" type="button">Çıkış Yap</button></div></div></div>
+    </div>
   </section>
 </main>
 
@@ -105,6 +113,7 @@
   <button data-page="takip"><i>▤</i><span>Sürecim</span></button>
   <button data-page="profil"><i>○</i><span>Profil</span></button>
 </nav>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="app.js"></script>
 </body>
 </html>
