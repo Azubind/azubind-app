@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#123c5a"><meta name="description" content="Azubind - Almanya'da Ausbildung yolculuğun için başvuru ve kariyer platformu.">
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>Azubind App</title><link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header><img src="icon.svg" alt="Azubind"><div><b>AZUBIND</b><small>Geleceğini Almanya'ya bağla.</small></div><button id="install" hidden>Uygulamayı Yükle</button></header>
+<main>
+<section class="hero"><span>🇩🇪 ALMANYA'DA AUSBILDUNG</span><h1>Mesleki geleceğine<br>ilk adımı at.</h1><p>Meslekleri keşfet, başvuru hazırlığını planla ve Azubind desteğine tek yerden ulaş.</p><div class="actions"><button onclick="go('meslekler')">Ausbildung Bul</button><button class="ghost" onclick="go('basvuru')">Başvuru Yap</button></div></section>
+<section id="home" class="page active"><h2>Azubind ile yolculuğun</h2><div class="steps"><article><b>1</b><h3>Mesleğini keşfet</h3><p>Sana uygun Ausbildung alanlarını incele.</p></article><article><b>2</b><h3>Başvurunu hazırla</h3><p>CV ve başvuru sürecini planla.</p></article><article><b>3</b><h3>Almanya'ya hazırlan</h3><p>Yerleşim ve sonraki adımlar için destek al.</p></article></div></section>
+<section id="meslekler" class="page"><h2>Ausbildung Alanları</h2><div class="cards"><article>⚕️<b>Sağlık</b></article><article>🚗<b>Otomotiv</b></article><article>⚡<b>Elektrik</b></article><article>🍽️<b>Gastronomi</b></article><article>📦<b>Lojistik</b></article><article>🔧<b>Teknik Meslekler</b></article></div></section>
+<section id="basvuru" class="page"><h2>Başvuru</h2><div class="panel"><h3>Ausbildung yolculuğunu başlat</h3><p>İlk sürümde bu alan Azubind iletişim kanalına yönlendirilecek. Sonraki aşamada hesap, belge yükleme ve başvuru takibi eklenebilir.</p><a class="button" href="https://azubind.com/" target="_blank" rel="noopener">Azubind ile İletişime Geç</a></div></section>
+<section id="takip" class="page"><h2>Başvurularım</h2><div class="panel"><h3>Yakında</h3><p>Güvenli kullanıcı hesabı ve başvuru durum takibi ikinci aşamada eklenecek.</p></div></section>
+<section id="profil" class="page"><h2>Profil</h2><div class="panel"><h3>Azubind Aday Profili</h3><p>Profil, CV ve belgeler için güvenli altyapıyı sonraki aşamada kuracağız.</p></div></section>
+</main>
+<nav><button data-page="home" class="on">⌂<span>Ana Sayfa</span></button><button data-page="meslekler">⌕<span>Ausbildung</span></button><button data-page="basvuru">＋<span>Başvuru</span></button><button data-page="takip">▤<span>Başvurularım</span></button><button data-page="profil">○<span>Profil</span></button></nav>
+<script src="app.js"></script></body></html>
