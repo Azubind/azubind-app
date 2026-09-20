@@ -34,3 +34,16 @@ if(sb){sb.auth.onAuthStateChange(()=>refreshAuth());refreshAuth();}
 
 async function checkAdmin(user){const btn=document.getElementById("admin-button"),page=document.getElementById("admin");if(!user){if(btn)btn.hidden=true;if(page)page.hidden=true;return false;}const {data}=await sb.from("admins").select("user_id").eq("user_id",user.id).maybeSingle();const ok=!!data;if(btn)btn.hidden=!ok;if(page)page.hidden=!ok;return ok;}
 const adminButton=document.getElementById("admin-button");if(adminButton)adminButton.addEventListener("click",()=>go("admin"));
+
+async function loadAdminPanel(){
+ const box=document.getElementById("admin-list");if(!box)return;
+ const {data:{user}}=await sb.auth.getUser();if(!await checkAdmin(user)){go("profil");return;}
+ box.innerHTML='<div class="panel"><div><h3>Başvurular yükleniyor...</h3></div></div>';
+ const {data,error}=await sb.from("applications").select("*").order("created_at",{ascending:false});
+ if(error){box.innerHTML='<div class="panel"><div><h3>Başvurular yüklenemedi</h3><p>'+safeText(error.message)+'</p></div></div>';return;}
+ if(!data.length){box.innerHTML='<div class="panel"><div><h3>Henüz başvuru yok</h3></div></div>';return;}
+ box.innerHTML=data.map(x=>'<article class="admin-card"><div><small>ADAY #'+x.id+'</small><h3>'+safeText(x.full_name||"İsimsiz aday")+'</h3><p>'+safeText(x.email||"E-posta yok")+' · '+safeText(x.phone||"Telefon yok")+'</p></div><div class="admin-facts"><span><small>Ausbildung</small><b>'+safeText(x.profession||"—")+'</b></span><span><small>Şehir</small><b>'+safeText(x.city||"—")+'</b></span><span><small>Almanca</small><b>'+safeText(x.german_level||"—")+'</b></span></div><label class="admin-status">Durum <select data-id="'+x.id+'"><option value="pending">Başvuru alındı</option><option value="reviewing">İnceleniyor</option><option value="contacted">İletişime geçildi</option><option value="interview">Görüşme aşamasında</option><option value="contract">Sözleşme aşamasında</option><option value="completed">Tamamlandı</option><option value="rejected">Sonuçlandı</option></select><em></em></label></article>').join("");
+ data.forEach((x,i)=>{const s=box.querySelectorAll("select")[i];s.value=x.status||"pending";s.addEventListener("change",()=>saveAdminStatus(x.id,s));});
+}
+function safeText(v){const d=document.createElement("div");d.textContent=String(v);return d.innerHTML;}
+async function saveAdminStatus(id,select){const note=select.parentElement.querySelector("em");select.disabled=true;note.textContent="Kaydediliyor...";const {error}=await sb.from("applications").update({status:select.value,updated_at:new Date().toISOString()}).eq("id",id);select.disabled=false;note.textContent=error?"Kaydedilemedi":"Kaydedildi ✓";}
