@@ -96,6 +96,11 @@
     <div class="page-title"><span>YÖNETİM</span><h1>Başvuru Yönetimi</h1><p>Aday başvurularını görüntüle ve süreç durumlarını güncelle.</p></div>
     <div class="admin-toolbar"><div><b id="admin-count">Başvurular</b><small>En yeni başvurular üstte gösterilir.</small></div><button type="button" onclick="loadAdminPanel()">Yenile ↻</button></div>
     <div id="admin-list" class="admin-list"></div>
+    <section id="admin-management" class="admin-management" hidden>
+      <div class="admin-management-head"><div><span>YÖNETİCİLER</span><h2>Admin Yönetimi</h2><p>Bu bölüm yalnızca Main Admin tarafından kullanılabilir.</p></div><button type="button" onclick="loadAdminManagement()">Yenile ↻</button></div>
+      <div id="admin-management-list"></div>
+      <div class="admin-add-box"><h3>Yönetici Yetkisi Ver</h3><p>Önce Supabase Authentication bölümünde oluşturduğun kullanıcının UID'sini gir.</p><form id="admin-add-form"><input name="user_id" type="text" placeholder="Kullanıcı UID" required><select name="role"><option value="admin">Yönetici</option><option value="main_admin">Main Admin</option></select><button type="submit">Yetki Ver</button></form><small id="admin-management-message"></small></div>
+    </section>
   </section>
 
   <section id="profil" class="page inner-page">
