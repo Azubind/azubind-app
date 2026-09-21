@@ -109,6 +109,19 @@
       </div>
       <div id="auth-user" hidden>
         <div class="panel"><div class="panel-icon">○</div><div><h3>Hesabın açık</h3><p id="user-email"></p><button id="admin-button" class="outline-button" type="button" hidden>Yönetici Paneli</button> <button id="logout-button" class="outline-button" type="button">Çıkış Yap</button></div></div>
+        <section class="profile-shell">
+          <div class="profile-head"><div><span>ADAY PROFİLİ</span><h3>Profil Bilgilerim</h3><p>Bilgilerini bir kez kaydet; başvurularında kullan.</p></div><div class="profile-score"><b id="profile-percent">0%</b><small>tamamlandı</small></div></div>
+          <form id="profile-form" class="profile-form">
+            <label><span>Ad Soyad</span><input name="full_name" type="text" autocomplete="name"></label>
+            <label><span>Doğum Tarihi</span><input name="birth_date" type="date"></label>
+            <label><span>Şehir</span><input name="city" type="text" autocomplete="address-level2"></label>
+            <label><span>Telefon</span><input name="phone" type="tel" autocomplete="tel"></label>
+            <label class="wide"><span>Adres</span><input name="address" type="text" autocomplete="street-address"></label>
+            <label><span>Eğitim Durumu</span><select name="education"><option value="">Seçiniz</option><option>Lise öğrencisi</option><option>Lise mezunu</option><option>Üniversite öğrencisi</option><option>Üniversite mezunu</option><option>Diğer</option></select></label>
+            <label><span>Almanca Seviyesi</span><select name="german_level"><option value="">Seçiniz</option><option>A1</option><option>A2</option><option>B1</option><option>B2</option><option>C1+</option><option>Henüz başlamadım</option></select></label>
+            <div class="wide profile-save"><button type="submit">Profili Kaydet</button><span id="profile-message"></span></div>
+          </form>
+        </section>
         <section class="documents-shell">
           <div class="documents-head"><div><span>BELGELERİM</span><h3>CV & Belgeler</h3><p>Belgelerini güvenli hesabına yükle. Dosyaların özel olarak saklanır.</p></div><button class="outline-button" type="button" onclick="loadDocuments()">Yenile ↻</button></div>
           <div class="document-grid">
