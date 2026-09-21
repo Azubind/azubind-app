@@ -163,10 +163,25 @@ async function loadCompanyApplications(userId,button){
  const card=button.closest(".admin-card"),box=card.querySelector(".admin-company-applications");
  if(!box)return;
  if(!box.hidden){box.hidden=true;button.textContent="Firma Takibi";return;}
- box.hidden=false;button.textContent="Firma Takibini Gizle";box.innerHTML="<small>Firma başvuruları yükleniyor...</small>";
+ box.hidden=false;button.textContent="Firma Takibini Gizle";
+ await renderCompanyApplications(userId,box);
+}
+async function renderCompanyApplications(userId,box){
+ box.innerHTML="<small>Firma başvuruları yükleniyor...</small>";
  const {data,error}=await sb.from("company_applications").select("company_name,city,application_date,status").eq("candidate_id",userId).order("application_date",{ascending:false});
  if(error){box.innerHTML="<small>Firma başvuruları yüklenemedi: "+safeText(error.message)+"</small>";return;}
- if(!data||!data.length){box.innerHTML="<small>Bu aday için henüz firma başvurusu eklenmedi.</small>";return;}
  const labels={applied:"Başvuruldu",waiting:"Cevap bekleniyor",interview:"Görüşme",accepted:"Kabul",rejected:"Olumsuz"};
- box.innerHTML=data.map(x=>"<div><b>"+safeText(x.company_name)+"</b><small> · "+safeText(x.city||"—")+" · "+safeText(x.application_date||"—")+" · "+safeText(labels[x.status]||x.status)+"</small></div>").join("");
+ const rows=data&&data.length?data.map(x=>"<div><b>"+safeText(x.company_name)+"</b><small> · "+safeText(x.city||"—")+" · "+safeText(x.application_date||"—")+" · "+safeText(labels[x.status]||x.status)+"</small></div>").join(""):"<small>Bu aday için henüz firma başvurusu eklenmedi.</small>";
+ box.innerHTML=rows+'<form class="company-application-form"><input name="company_name" placeholder="Firma adı" required><input name="city" placeholder="Şehir"><input name="application_date" type="date" required><select name="status"><option value="applied">Başvuruldu</option><option value="waiting">Cevap bekleniyor</option><option value="interview">Görüşme</option><option value="accepted">Kabul</option><option value="rejected">Olumsuz</option></select><button type="submit">Firma Başvurusu Ekle</button><small class="company-application-message"></small></form>';
+ const form=box.querySelector(".company-application-form");
+ form.elements.application_date.value=new Date().toISOString().slice(0,10);
+ form.addEventListener("submit",async e=>{
+   e.preventDefault();
+   const msg=form.querySelector(".company-application-message"),fd=new FormData(form),submit=form.querySelector('button[type="submit"]');
+   submit.disabled=true;msg.textContent="Kaydediliyor...";
+   const {error}=await sb.from("company_applications").insert({candidate_id:userId,company_name:String(fd.get("company_name")||"").trim(),city:String(fd.get("city")||"").trim()||null,application_date:fd.get("application_date"),status:fd.get("status")});
+   submit.disabled=false;
+   if(error){msg.textContent="Kaydedilemedi: "+error.message;return;}
+   await renderCompanyApplications(userId,box);
+ });
 }
