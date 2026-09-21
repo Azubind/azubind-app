@@ -139,3 +139,17 @@ async function loadAdminCandidate(userId,button){
  box.innerHTML='<div class="admin-profile-grid">'+fields.map(v=>'<span><small>'+safeText(v[0])+'</small><b>'+safeText(v[1]||"—")+'</b></span>').join("")+'</div>';
  box.dataset.loaded="1";button.textContent="Detayı Gizle";
 }
+
+async function loadAdminManagement(){
+ const shell=document.getElementById("admin-management"),list=document.getElementById("admin-management-list");if(!shell||!list||!sb)return;
+ const {data:{user}}=await sb.auth.getUser();if(!user){shell.hidden=true;return;}
+ const {data:isMain,error:mainError}=await sb.rpc("is_main_admin");if(mainError||!isMain){shell.hidden=true;return;}
+ shell.hidden=false;list.innerHTML="<small>Yöneticiler yükleniyor...</small>";
+ const {data,error}=await sb.from("admins").select("user_id,role,created_at").order("created_at",{ascending:true});
+ if(error){list.innerHTML="<small>Yöneticiler yüklenemedi.</small>";return;}
+ list.innerHTML=(data||[]).map(a=>'<div class="admin-manager-row"><div><b>'+safeText(a.role==="main_admin"?"Main Admin":"Yönetici")+'</b><small>'+safeText(a.user_id)+'</small></div><div><select onchange="changeAdminRole(\''+a.user_id+'\',this)"><option value="admin"'+(a.role==="admin"?" selected":"")+'>Yönetici</option><option value="main_admin"'+(a.role==="main_admin"?" selected":"")+'>Main Admin</option></select><button type="button" class="danger" onclick="removeAdmin(\''+a.user_id+'\')">Yetkiyi Kaldır</button></div></div>').join("")||"<small>Yönetici bulunamadı.</small>";
+}
+async function changeAdminRole(userId,select){const {error}=await sb.from("admins").update({role:select.value}).eq("user_id",userId);const msg=document.getElementById("admin-management-message");if(msg)msg.textContent=error?"Değişiklik kaydedilemedi.":"Yetki güncellendi ✓";if(!error)loadAdminManagement();}
+async function removeAdmin(userId){if(!confirm("Bu kullanıcının yönetici yetkisini kaldırmak istiyor musun?"))return;const {error}=await sb.from("admins").delete().eq("user_id",userId);const msg=document.getElementById("admin-management-message");if(msg)msg.textContent=error?"Yetki kaldırılamadı.":"Yönetici yetkisi kaldırıldı ✓";if(!error)loadAdminManagement();}
+const adminAddForm=document.getElementById("admin-add-form");if(adminAddForm)adminAddForm.addEventListener("submit",async e=>{e.preventDefault();const f=new FormData(adminAddForm),userId=String(f.get("user_id")||"").trim(),role=String(f.get("role")||"admin"),msg=document.getElementById("admin-management-message");if(msg)msg.textContent="Kaydediliyor...";const {error}=await sb.from("admins").upsert({user_id:userId,role},{onConflict:"user_id"});if(msg)msg.textContent=error?"Yetki verilemedi. UID'yi kontrol et.":"Yönetici yetkisi verildi ✓";if(!error){adminAddForm.reset();loadAdminManagement();}});
+if(sb)sb.auth.getUser().then(()=>loadAdminManagement());
