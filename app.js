@@ -43,7 +43,7 @@ async function loadAdminPanel(){
  if(error){box.innerHTML='<div class="panel"><div><h3>Başvurular yüklenemedi</h3><p>'+safeText(error.message)+'</p></div></div>';return;}
  if(!data.length){const count=document.getElementById("admin-count");if(count)count.textContent="0 başvuru";box.innerHTML='<div class="panel"><div><h3>Henüz başvuru yok</h3></div></div>';return;}
  const count=document.getElementById("admin-count");if(count)count.textContent=data.length+" başvuru";
- box.innerHTML=data.map(x=>'<article class="admin-card"><div><small>ADAY #'+x.id+'</small><h3>'+safeText(x.full_name||"İsimsiz aday")+'</h3><p>'+safeText(x.email||"E-posta yok")+' · '+safeText(x.phone||"Telefon yok")+'</p></div><div class="admin-facts"><span><small>Ausbildung</small><b>'+safeText(x.profession||"—")+'</b></span><span><small>Şehir</small><b>'+safeText(x.city||"—")+'</b></span><span><small>Almanca</small><b>'+safeText(x.german_level||"—")+'</b></span></div><div class="admin-actions"><button type="button" onclick="loadAdminDocuments(\''+x.user_id+'\',this)">Belgeleri Gör</button></div><div class="admin-documents" hidden></div><label class="admin-status">Durum <select data-id="'+x.id+'"><option value="pending">Başvuru alındı</option><option value="reviewing">İnceleniyor</option><option value="contacted">İletişime geçildi</option><option value="interview">Görüşme aşamasında</option><option value="contract">Sözleşme aşamasında</option><option value="completed">Tamamlandı</option><option value="rejected">Sonuçlandı</option></select><em></em></label></article>').join("");
+ box.innerHTML=data.map(x=>'<article class="admin-card"><div><small>ADAY #'+x.id+'</small><h3>'+safeText(x.full_name||"İsimsiz aday")+'</h3><p>'+safeText(x.email||"E-posta yok")+' · '+safeText(x.phone||"Telefon yok")+'</p></div><div class="admin-facts"><span><small>Ausbildung</small><b>'+safeText(x.profession||"—")+'</b></span><span><small>Şehir</small><b>'+safeText(x.city||"—")+'</b></span><span><small>Almanca</small><b>'+safeText(x.german_level||"—")+'</b></span></div><div class="admin-actions"><button type="button" onclick="loadAdminCandidate(\''+x.user_id+'\',this)">Aday Detayı</button><button type="button" onclick="loadAdminDocuments(\''+x.user_id+'\',this)">Belgeleri Gör</button></div><div class="admin-candidate-detail" hidden></div><div class="admin-documents" hidden></div><label class="admin-status">Durum <select data-id="'+x.id+'"><option value="pending">Başvuru alındı</option><option value="reviewing">İnceleniyor</option><option value="contacted">İletişime geçildi</option><option value="interview">Görüşme aşamasında</option><option value="contract">Sözleşme aşamasında</option><option value="completed">Tamamlandı</option><option value="rejected">Sonuçlandı</option></select><em></em></label></article>').join("");
  data.forEach((x,i)=>{const s=box.querySelectorAll("select")[i];s.value=x.status||"pending";s.addEventListener("change",()=>saveAdminStatus(x.id,s));});
 }
 function safeText(v){const d=document.createElement("div");d.textContent=String(v);return d.innerHTML;}
@@ -113,4 +113,19 @@ async function loadProfileIntoApplication(){
  if(!sb||!applicationForm)return;const {data:{user}}=await sb.auth.getUser();if(!user)return;
  const {data,error}=await sb.from("profiles").select("*").eq("user_id",user.id).maybeSingle();
  if(!error&&data)prefillApplication(data,user);else prefillApplication({},user);
+}
+
+async function loadAdminCandidate(userId,button){
+ const card=button.closest(".admin-card"),box=card.querySelector(".admin-candidate-detail");
+ if(!userId||userId==="null"){box.hidden=false;box.innerHTML="<small>Bu başvuru bir kullanıcı profiline bağlı değil.</small>";return;}
+ if(!box.hidden&&box.dataset.loaded==="1"){box.hidden=true;button.textContent="Aday Detayı";return;}
+ box.hidden=false;box.innerHTML="<small>Profil yükleniyor...</small>";button.disabled=true;
+ const {data:{user}}=await sb.auth.getUser();if(!await checkAdmin(user)){button.disabled=false;return;}
+ const {data,error}=await sb.from("profiles").select("*").eq("user_id",userId).maybeSingle();button.disabled=false;
+ if(error){box.innerHTML="<small>Profil yüklenemedi: "+safeText(error.message)+"</small>";return;}
+ if(!data){box.innerHTML="<small>Bu aday henüz profil bilgilerini kaydetmemiş.</small>";box.dataset.loaded="1";button.textContent="Detayı Gizle";return;}
+ const date=data.birth_date?new Date(data.birth_date+"T00:00:00").toLocaleDateString("tr-TR"):"—";
+ const fields=[["Ad Soyad",data.full_name],["Doğum Tarihi",date],["Şehir",data.city],["Telefon",data.phone],["Eğitim",data.education],["Almanca",data.german_level],["Adres",data.address]];
+ box.innerHTML='<div class="admin-profile-grid">'+fields.map(v=>'<span><small>'+safeText(v[0])+'</small><b>'+safeText(v[1]||"—")+'</b></span>').join("")+'</div>';
+ box.dataset.loaded="1";button.textContent="Detayı Gizle";
 }
