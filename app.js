@@ -41,7 +41,8 @@ async function loadAdminPanel(){
  box.innerHTML='<div class="panel"><div><h3>Başvurular yükleniyor...</h3></div></div>';
  const {data,error}=await sb.from("applications").select("*").order("created_at",{ascending:false});
  if(error){box.innerHTML='<div class="panel"><div><h3>Başvurular yüklenemedi</h3><p>'+safeText(error.message)+'</p></div></div>';return;}
- if(!data.length){box.innerHTML='<div class="panel"><div><h3>Henüz başvuru yok</h3></div></div>';return;}
+ if(!data.length){const count=document.getElementById("admin-count");if(count)count.textContent="0 başvuru";box.innerHTML='<div class="panel"><div><h3>Henüz başvuru yok</h3></div></div>';return;}
+ const count=document.getElementById("admin-count");if(count)count.textContent=data.length+" başvuru";
  box.innerHTML=data.map(x=>'<article class="admin-card"><div><small>ADAY #'+x.id+'</small><h3>'+safeText(x.full_name||"İsimsiz aday")+'</h3><p>'+safeText(x.email||"E-posta yok")+' · '+safeText(x.phone||"Telefon yok")+'</p></div><div class="admin-facts"><span><small>Ausbildung</small><b>'+safeText(x.profession||"—")+'</b></span><span><small>Şehir</small><b>'+safeText(x.city||"—")+'</b></span><span><small>Almanca</small><b>'+safeText(x.german_level||"—")+'</b></span></div><label class="admin-status">Durum <select data-id="'+x.id+'"><option value="pending">Başvuru alındı</option><option value="reviewing">İnceleniyor</option><option value="contacted">İletişime geçildi</option><option value="interview">Görüşme aşamasında</option><option value="contract">Sözleşme aşamasında</option><option value="completed">Tamamlandı</option><option value="rejected">Sonuçlandı</option></select><em></em></label></article>').join("");
  data.forEach((x,i)=>{const s=box.querySelectorAll("select")[i];s.value=x.status||"pending";s.addEventListener("change",()=>saveAdminStatus(x.id,s));});
 }
