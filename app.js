@@ -168,10 +168,10 @@ async function loadCompanyApplications(userId,button){
 }
 async function renderCompanyApplications(userId,box){
  box.innerHTML="<small>Firma başvuruları yükleniyor...</small>";
- const {data,error}=await sb.from("company_applications").select("company_name,city,application_date,status").eq("candidate_id",userId).order("application_date",{ascending:false});
+ const {data,error}=await sb.from("company_applications").select("id,company_name,city,application_date,status").eq("candidate_id",userId).order("application_date",{ascending:false});
  if(error){box.innerHTML="<small>Firma başvuruları yüklenemedi: "+safeText(error.message)+"</small>";return;}
  const labels={applied:"Başvuruldu",waiting:"Cevap bekleniyor",interview:"Görüşme",accepted:"Kabul",rejected:"Olumsuz"};
- const rows=data&&data.length?data.map(x=>"<div><b>"+safeText(x.company_name)+"</b><small> · "+safeText(x.city||"—")+" · "+safeText(x.application_date||"—")+" · "+safeText(labels[x.status]||x.status)+"</small></div>").join(""):"<small>Bu aday için henüz firma başvurusu eklenmedi.</small>";
+ const rows=data&&data.length?data.map(x=>"<div><b>"+safeText(x.company_name)+"</b><small> · "+safeText(x.city||"—")+" · "+safeText(x.application_date||"—")+"</small><select onchange=\"updateCompanyApplicationStatus("+x.id+",this,\\\'"+userId+"\\\')\"><option value=\"applied\""+(x.status==="applied"?" selected":"")+">Başvuruldu</option><option value=\"waiting\""+(x.status==="waiting"?" selected":"")+">Cevap bekleniyor</option><option value=\"interview\""+(x.status==="interview"?" selected":"")+">Görüşme</option><option value=\"accepted\""+(x.status==="accepted"?" selected":"")+">Kabul</option><option value=\"rejected\""+(x.status==="rejected"?" selected":"")+">Olumsuz</option></select></div>").join(""):"<small>Bu aday için henüz firma başvurusu eklenmedi.</small>";
  box.innerHTML=rows+'<form class="company-application-form"><input name="company_name" placeholder="Firma adı" required><input name="city" placeholder="Şehir"><input name="application_date" type="date" required><select name="status"><option value="applied">Başvuruldu</option><option value="waiting">Cevap bekleniyor</option><option value="interview">Görüşme</option><option value="accepted">Kabul</option><option value="rejected">Olumsuz</option></select><button type="submit">Firma Başvurusu Ekle</button><small class="company-application-message"></small></form>';
  const form=box.querySelector(".company-application-form");
  form.elements.application_date.value=new Date().toISOString().slice(0,10);
@@ -185,3 +185,5 @@ async function renderCompanyApplications(userId,box){
    await renderCompanyApplications(userId,box);
  });
 }
+
+async function updateCompanyApplicationStatus(id,select,userId){select.disabled=true;const {error}=await sb.from("company_applications").update({status:select.value}).eq("id",id);select.disabled=false;if(error){alert("Durum güncellenemedi: "+error.message);const box=select.closest(".admin-company-applications");if(box)await renderCompanyApplications(userId,box);}}
