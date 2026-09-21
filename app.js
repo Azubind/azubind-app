@@ -43,7 +43,7 @@ async function loadAdminPanel(){
  if(error){box.innerHTML='<div class="panel"><div><h3>Başvurular yüklenemedi</h3><p>'+safeText(error.message)+'</p></div></div>';return;}
  if(!data.length){const count=document.getElementById("admin-count");if(count)count.textContent="0 başvuru";box.innerHTML='<div class="panel"><div><h3>Henüz başvuru yok</h3></div></div>';return;}
  const count=document.getElementById("admin-count");if(count)count.textContent=data.length+" başvuru";
- box.innerHTML=data.map(x=>'<article class="admin-card"><div><small>ADAY #'+x.id+'</small><h3>'+safeText(x.full_name||"İsimsiz aday")+'</h3><p>'+safeText(x.email||"E-posta yok")+' · '+safeText(x.phone||"Telefon yok")+'</p></div><div class="admin-facts"><span><small>Ausbildung</small><b>'+safeText(x.profession||"—")+'</b></span><span><small>Şehir</small><b>'+safeText(x.city||"—")+'</b></span><span><small>Almanca</small><b>'+safeText(x.german_level||"—")+'</b></span></div><label class="admin-status">Durum <select data-id="'+x.id+'"><option value="pending">Başvuru alındı</option><option value="reviewing">İnceleniyor</option><option value="contacted">İletişime geçildi</option><option value="interview">Görüşme aşamasında</option><option value="contract">Sözleşme aşamasında</option><option value="completed">Tamamlandı</option><option value="rejected">Sonuçlandı</option></select><em></em></label></article>').join("");
+ box.innerHTML=data.map(x=>'<article class="admin-card"><div><small>ADAY #'+x.id+'</small><h3>'+safeText(x.full_name||"İsimsiz aday")+'</h3><p>'+safeText(x.email||"E-posta yok")+' · '+safeText(x.phone||"Telefon yok")+'</p></div><div class="admin-facts"><span><small>Ausbildung</small><b>'+safeText(x.profession||"—")+'</b></span><span><small>Şehir</small><b>'+safeText(x.city||"—")+'</b></span><span><small>Almanca</small><b>'+safeText(x.german_level||"—")+'</b></span></div><div class="admin-actions"><button type="button" onclick="loadAdminDocuments(\''+x.user_id+'\',this)">Belgeleri Gör</button></div><div class="admin-documents" hidden></div><label class="admin-status">Durum <select data-id="'+x.id+'"><option value="pending">Başvuru alındı</option><option value="reviewing">İnceleniyor</option><option value="contacted">İletişime geçildi</option><option value="interview">Görüşme aşamasında</option><option value="contract">Sözleşme aşamasında</option><option value="completed">Tamamlandı</option><option value="rejected">Sonuçlandı</option></select><em></em></label></article>').join("");
  data.forEach((x,i)=>{const s=box.querySelectorAll("select")[i];s.value=x.status||"pending";s.addEventListener("change",()=>saveAdminStatus(x.id,s));});
 }
 function safeText(v){const d=document.createElement("div");d.textContent=String(v);return d.innerHTML;}
@@ -80,3 +80,17 @@ async function loadDocuments(){
 function formatBytes(bytes){if(!bytes)return"";if(bytes<1024*1024)return Math.ceil(bytes/1024)+" KB";return (bytes/1024/1024).toFixed(1)+" MB";}
 async function openDocument(name){const {data:{user}}=await sb.auth.getUser();if(!user)return;const {data,error}=await sb.storage.from(DOCUMENT_BUCKET).createSignedUrl(user.id+"/"+name,60);if(error){showDocumentMessage("Belge açılamadı: "+error.message,true);return;}window.open(data.signedUrl,"_blank","noopener");}
 async function deleteDocument(name){if(!confirm("Bu belgeyi silmek istediğine emin misin?"))return;const {data:{user}}=await sb.auth.getUser();if(!user)return;const {error}=await sb.storage.from(DOCUMENT_BUCKET).remove([user.id+"/"+name]);if(error){showDocumentMessage("Belge silinemedi: "+error.message,true);return;}showDocumentMessage("Belge silindi.");await loadDocuments();}
+
+async function loadAdminDocuments(userId,button){
+ const card=button.closest(".admin-card"),box=card.querySelector(".admin-documents");box.hidden=false;box.innerHTML="<small>Belgeler yükleniyor...</small>";
+ const {data,error}=await sb.storage.from(DOCUMENT_BUCKET).list(userId,{limit:100,sortBy:{column:"created_at",order:"desc"}});
+ if(error){box.innerHTML="<small>Belgeler yüklenemedi: "+safeText(error.message)+"</small>";return;}
+ const files=(data||[]).filter(x=>x.name!==".emptyFolderPlaceholder");
+ if(!files.length){box.innerHTML="<small>Bu aday henüz belge yüklememiş.</small>";return;}
+ box.innerHTML=files.map(x=>{const type=x.name.startsWith("cv-")?"cv":x.name.startsWith("diploma-")?"diploma":x.name.startsWith("language-certificate-")?"language-certificate":"document";return '<button type="button" onclick="openAdminDocument(\''+userId+'\',\''+safeText(x.name)+'\')">'+safeText(documentLabels[type]||"Belge")+' ↗</button>';}).join("");
+}
+async function openAdminDocument(userId,name){
+ const {data,error}=await sb.storage.from(DOCUMENT_BUCKET).createSignedUrl(userId+"/"+name,60);
+ if(error){alert("Belge açılamadı: "+error.message);return;}
+ window.open(data.signedUrl,"_blank","noopener");
+}
