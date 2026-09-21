@@ -3,7 +3,7 @@ const SUPABASE_KEY="sb_publishable_p9a6zgEwrYnY99nsxdB7Mw_564Y4Rfj";
 const sb=window.supabase?window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
 
 const pages=document.querySelectorAll(".page");const navButtons=document.querySelectorAll("nav button");
-function go(pageId){pages.forEach(page=>page.classList.toggle("active",page.id===pageId));navButtons.forEach(button=>button.classList.toggle("on",button.dataset.page===pageId));window.scrollTo(0,0);if(pageId==="takip"&&sb){sb.auth.getUser().then(({data:{user}})=>loadApplication(user));}if(pageId==="admin"&&sb){loadAdminPanel();}if(pageId==="profil"&&sb){sb.auth.getUser().then(({data:{user}})=>{if(user){loadProfile();loadDocuments();}});}}
+function go(pageId){pages.forEach(page=>page.classList.toggle("active",page.id===pageId));navButtons.forEach(button=>button.classList.toggle("on",button.dataset.page===pageId));window.scrollTo(0,0);if(pageId==="takip"&&sb){sb.auth.getUser().then(({data:{user}})=>loadApplication(user));}if(pageId==="admin"&&sb){loadAdminPanel();}if(pageId==="profil"&&sb){sb.auth.getUser().then(({data:{user}})=>{if(user){loadProfile();loadDocuments();}});}if(pageId==="basvuru"&&sb){loadProfileIntoApplication();}}
 navButtons.forEach(button=>button.addEventListener("click",()=>go(button.dataset.page)));
 
 const professions={
@@ -108,3 +108,9 @@ if(profileForm){
  profileForm.addEventListener("submit",async e=>{e.preventDefault();const msg=document.getElementById("profile-message");const {data:{user}}=await sb.auth.getUser();if(!user)return;const f=new FormData(profileForm);const payload={user_id:user.id,full_name:f.get("full_name"),birth_date:f.get("birth_date")||null,city:f.get("city"),address:f.get("address"),phone:f.get("phone"),education:f.get("education"),german_level:f.get("german_level"),updated_at:new Date().toISOString()};if(msg)msg.textContent="Kaydediliyor...";const {error}=await sb.from("profiles").upsert(payload,{onConflict:"user_id"});if(msg)msg.textContent=error?"Kaydedilemedi: "+error.message:"Kaydedildi ✓";if(!error){updateProfilePercent();prefillApplication(payload,user);}});
 }
 function prefillApplication(p,user){if(!applicationForm)return;const set=(name,value)=>{const el=applicationForm.elements[name];if(el&&!el.value&&value)el.value=value;};set("fullName",p.full_name);set("city",p.city);set("phone",p.phone);set("german",p.german_level);set("education",p.education);set("email",user&&user.email);if(p.birth_date){set("birthYear",new Date(p.birth_date+"T00:00:00").getFullYear());}}
+
+async function loadProfileIntoApplication(){
+ if(!sb||!applicationForm)return;const {data:{user}}=await sb.auth.getUser();if(!user)return;
+ const {data,error}=await sb.from("profiles").select("*").eq("user_id",user.id).maybeSingle();
+ if(!error&&data)prefillApplication(data,user);else prefillApplication({},user);
+}
