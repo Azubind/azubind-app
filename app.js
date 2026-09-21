@@ -33,7 +33,11 @@ const signupForm=document.getElementById("signup-form");if(signupForm)signupForm
 const resetPasswordForm=document.getElementById("reset-password-form");
 function showResetPassword(){const guest=document.getElementById("auth-guest"),login=document.getElementById("login-form"),signup=document.getElementById("signup-form"),tabs=document.querySelector(".auth-tabs");if(guest)guest.hidden=false;if(login)login.hidden=true;if(signup)signup.hidden=true;if(tabs)tabs.hidden=true;if(resetPasswordForm)resetPasswordForm.hidden=false;go("profil");}
 if(resetPasswordForm)resetPasswordForm.addEventListener("submit",async e=>{e.preventDefault();const msg=document.getElementById("reset-password-message"),f=new FormData(resetPasswordForm),password=String(f.get("password")||""),confirmPassword=String(f.get("passwordConfirm")||"");msg.hidden=false;if(password.length<6){msg.textContent="Şifre en az 6 karakter olmalı.";return;}if(password!==confirmPassword){msg.textContent="Şifreler eşleşmiyor.";return;}const button=resetPasswordForm.querySelector('button[type="submit"]');button.disabled=true;msg.textContent="Şifre güncelleniyor...";const {error}=await sb.auth.updateUser({password});button.disabled=false;if(error){msg.textContent="Şifre güncellenemedi: "+error.message;return;}msg.textContent="Şifren başarıyla güncellendi ✓";setTimeout(()=>{window.history.replaceState({},document.title,window.location.pathname);refreshAuth();},800);});
-if(sb)sb.auth.onAuthStateChange((event)=>{if(event==="PASSWORD_RECOVERY")showResetPassword();});
+if(sb){
+ const recoveryInUrl=()=>window.location.hash.includes("type=recovery")||new URLSearchParams(window.location.search).get("type")==="recovery";
+ sb.auth.onAuthStateChange((event)=>{if(event==="PASSWORD_RECOVERY"||recoveryInUrl())setTimeout(showResetPassword,0);});
+ if(recoveryInUrl())setTimeout(showResetPassword,0);
+}
 const logoutButton=document.getElementById("logout-button");if(logoutButton)logoutButton.addEventListener("click",async()=>{await sb.auth.signOut();await refreshAuth();});
 if(sb){sb.auth.onAuthStateChange(()=>refreshAuth());refreshAuth();}
 
