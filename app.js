@@ -3,7 +3,7 @@ const SUPABASE_KEY="sb_publishable_p9a6zgEwrYnY99nsxdB7Mw_564Y4Rfj";
 const sb=window.supabase?window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
 
 const pages=document.querySelectorAll(".page");const navButtons=document.querySelectorAll("nav button");
-function go(pageId){pages.forEach(page=>page.classList.toggle("active",page.id===pageId));navButtons.forEach(button=>button.classList.toggle("on",button.dataset.page===pageId));window.scrollTo(0,0);if(pageId==="takip"&&sb){sb.auth.getUser().then(({data:{user}})=>loadApplication(user));}if(pageId==="admin"&&sb){loadAdminPanel();}if(pageId==="profil"&&sb){sb.auth.getUser().then(({data:{user}})=>{if(user)loadDocuments();});}}
+function go(pageId){pages.forEach(page=>page.classList.toggle("active",page.id===pageId));navButtons.forEach(button=>button.classList.toggle("on",button.dataset.page===pageId));window.scrollTo(0,0);if(pageId==="takip"&&sb){sb.auth.getUser().then(({data:{user}})=>loadApplication(user));}if(pageId==="admin"&&sb){loadAdminPanel();}if(pageId==="profil"&&sb){sb.auth.getUser().then(({data:{user}})=>{if(user){loadProfile();loadDocuments();}});}}
 navButtons.forEach(button=>button.addEventListener("click",()=>go(button.dataset.page)));
 
 const professions={
@@ -94,3 +94,17 @@ async function openAdminDocument(userId,name){
  if(error){alert("Belge açılamadı: "+error.message);return;}
  window.open(data.signedUrl,"_blank","noopener");
 }
+
+const profileForm=document.getElementById("profile-form");
+async function loadProfile(){
+ if(!sb||!profileForm)return;const {data:{user}}=await sb.auth.getUser();if(!user)return;
+ const {data,error}=await sb.from("profiles").select("*").eq("user_id",user.id).maybeSingle();if(error)return;
+ if(data){["full_name","birth_date","city","address","phone","education","german_level"].forEach(k=>{if(profileForm.elements[k])profileForm.elements[k].value=data[k]||"";});}
+ updateProfilePercent();
+}
+function updateProfilePercent(){if(!profileForm)return;const keys=["full_name","birth_date","city","address","phone","education","german_level"];const done=keys.filter(k=>String(profileForm.elements[k].value||"").trim()).length;const el=document.getElementById("profile-percent");if(el)el.textContent=Math.round(done/keys.length*100)+"%";}
+if(profileForm){
+ profileForm.addEventListener("input",updateProfilePercent);
+ profileForm.addEventListener("submit",async e=>{e.preventDefault();const msg=document.getElementById("profile-message");const {data:{user}}=await sb.auth.getUser();if(!user)return;const f=new FormData(profileForm);const payload={user_id:user.id,full_name:f.get("full_name"),birth_date:f.get("birth_date")||null,city:f.get("city"),address:f.get("address"),phone:f.get("phone"),education:f.get("education"),german_level:f.get("german_level"),updated_at:new Date().toISOString()};if(msg)msg.textContent="Kaydediliyor...";const {error}=await sb.from("profiles").upsert(payload,{onConflict:"user_id"});if(msg)msg.textContent=error?"Kaydedilemedi: "+error.message:"Kaydedildi ✓";if(!error){updateProfilePercent();prefillApplication(payload,user);}});
+}
+function prefillApplication(p,user){if(!applicationForm)return;const set=(name,value)=>{const el=applicationForm.elements[name];if(el&&!el.value&&value)el.value=value;};set("fullName",p.full_name);set("city",p.city);set("phone",p.phone);set("german",p.german_level);set("education",p.education);set("email",user&&user.email);if(p.birth_date){set("birthYear",new Date(p.birth_date+"T00:00:00").getFullYear());}}
