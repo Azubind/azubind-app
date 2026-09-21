@@ -92,7 +92,13 @@
     <div id="application-status" class="panel"><div class="panel-icon">✓</div><div><h3>Başvuru bilgisi</h3><p>Durumunu görmek için hesabına giriş yap.</p></div></div>
   </section>
 
-  <section id="admin" class="page inner-page" hidden>\n    <div class="page-title"><span>YÖNETİM</span><h1>Başvuru Yönetimi</h1><p>Aday başvurularını görüntüle ve süreç durumlarını güncelle.</p></div>\n    <div id="admin-list" class="admin-list"></div>\n  </section>\n\n  <section id="profil" class="page inner-page">
+  <section id="admin" class="page inner-page" hidden>
+    <div class="page-title"><span>YÖNETİM</span><h1>Başvuru Yönetimi</h1><p>Aday başvurularını görüntüle ve süreç durumlarını güncelle.</p></div>
+    <div class="admin-toolbar"><div><b id="admin-count">Başvurular</b><small>En yeni başvurular üstte gösterilir.</small></div><button type="button" onclick="loadAdminPanel()">Yenile ↻</button></div>
+    <div id="admin-list" class="admin-list"></div>
+  </section>
+
+  <section id="profil" class="page inner-page">
     <div class="page-title"><span>HESABIM</span><h1>Azubind Hesabı</h1><p>Kayıt ol, e-postanı doğrula ve başvurunu kendi hesabından yönet.</p></div>
     <div id="auth-shell" class="auth-shell">
       <div id="auth-guest">
