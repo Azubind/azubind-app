@@ -3,7 +3,7 @@ const SUPABASE_KEY="sb_publishable_p9a6zgEwrYnY99nsxdB7Mw_564Y4Rfj";
 const sb=window.supabase?window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
 
 const pages=document.querySelectorAll(".page");const navButtons=document.querySelectorAll("nav button");
-function go(pageId){pages.forEach(page=>page.classList.toggle("active",page.id===pageId));navButtons.forEach(button=>button.classList.toggle("on",button.dataset.page===pageId));window.scrollTo(0,0);if(pageId==="takip"&&sb){sb.auth.getUser().then(({data:{user}})=>loadApplication(user));}if(pageId==="admin"&&sb){loadAdminPanel();}}
+function go(pageId){pages.forEach(page=>page.classList.toggle("active",page.id===pageId));navButtons.forEach(button=>button.classList.toggle("on",button.dataset.page===pageId));window.scrollTo(0,0);if(pageId==="takip"&&sb){sb.auth.getUser().then(({data:{user}})=>loadApplication(user));}if(pageId==="admin"&&sb){loadAdminPanel();}if(pageId==="profil"&&sb){sb.auth.getUser().then(({data:{user}})=>{if(user)loadDocuments();});}}
 navButtons.forEach(button=>button.addEventListener("click",()=>go(button.dataset.page)));
 
 const professions={
@@ -48,3 +48,35 @@ async function loadAdminPanel(){
 }
 function safeText(v){const d=document.createElement("div");d.textContent=String(v);return d.innerHTML;}
 async function saveAdminStatus(id,select){const note=select.parentElement.querySelector("em");select.disabled=true;note.textContent="Kaydediliyor...";const {error}=await sb.from("applications").update({status:select.value,updated_at:new Date().toISOString()}).eq("id",id);select.disabled=false;note.textContent=error?"Kaydedilemedi":"Kaydedildi ✓";}
+
+const DOCUMENT_BUCKET="candidate-documents";
+const documentLabels={cv:"CV",diploma:"Diploma","language-certificate":"Dil Sertifikası"};
+function showDocumentMessage(text,isError=false){const box=document.getElementById("document-message");if(!box)return;box.hidden=false;box.textContent=text;box.classList.toggle("error",isError);}
+function cleanFileName(name){return name.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-zA-Z0-9._-]/g,"-").replace(/-+/g,"-");}
+async function uploadDocument(input,type){
+ if(!sb||!input.files||!input.files[0])return;
+ const file=input.files[0];if(file.size>10*1024*1024){showDocumentMessage("Dosya en fazla 10 MB olabilir.",true);input.value="";return;}
+ const {data:{user}}=await sb.auth.getUser();if(!user){showDocumentMessage("Belge yüklemek için giriş yapmalısın.",true);return;}
+ showDocumentMessage("Belge yükleniyor...");
+ const path=user.id+"/"+type+"-"+Date.now()+"-"+cleanFileName(file.name);
+ const {error}=await sb.storage.from(DOCUMENT_BUCKET).upload(path,file,{upsert:false,contentType:file.type||undefined});
+ input.value="";
+ if(error){showDocumentMessage("Belge yüklenemedi: "+error.message,true);return;}
+ showDocumentMessage(documentLabels[type]+" başarıyla yüklendi.");await loadDocuments();
+}
+async function loadDocuments(){
+ const box=document.getElementById("document-list");if(!box||!sb)return;
+ const {data:{user}}=await sb.auth.getUser();if(!user){box.innerHTML="";return;}
+ box.innerHTML='<p class="document-empty">Belgeler yükleniyor...</p>';
+ const {data,error}=await sb.storage.from(DOCUMENT_BUCKET).list(user.id,{limit:100,sortBy:{column:"created_at",order:"desc"}});
+ if(error){box.innerHTML='<p class="document-empty">Belgeler yüklenemedi: '+safeText(error.message)+'</p>';return;}
+ if(!data||!data.length){box.innerHTML='<p class="document-empty">Henüz belge yüklemedin.</p>';return;}
+ box.innerHTML=data.filter(x=>x.name!==".emptyFolderPlaceholder").map(x=>{
+   const type=x.name.startsWith("cv-")?"cv":x.name.startsWith("diploma-")?"diploma":x.name.startsWith("language-certificate-")?"language-certificate":"document";
+   const label=documentLabels[type]||"Belge";const size=x.metadata&&x.metadata.size?formatBytes(x.metadata.size):"";
+   return '<article class="document-item"><div><b>'+safeText(label)+'</b><small>'+safeText(size)+'</small></div><div><button type="button" onclick="openDocument(\''+safeText(x.name)+'\')">Görüntüle</button><button type="button" class="danger" onclick="deleteDocument(\''+safeText(x.name)+'\')">Sil</button></div></article>';
+ }).join("");
+}
+function formatBytes(bytes){if(!bytes)return"";if(bytes<1024*1024)return Math.ceil(bytes/1024)+" KB";return (bytes/1024/1024).toFixed(1)+" MB";}
+async function openDocument(name){const {data:{user}}=await sb.auth.getUser();if(!user)return;const {data,error}=await sb.storage.from(DOCUMENT_BUCKET).createSignedUrl(user.id+"/"+name,60);if(error){showDocumentMessage("Belge açılamadı: "+error.message,true);return;}window.open(data.signedUrl,"_blank","noopener");}
+async function deleteDocument(name){if(!confirm("Bu belgeyi silmek istediğine emin misin?"))return;const {data:{user}}=await sb.auth.getUser();if(!user)return;const {error}=await sb.storage.from(DOCUMENT_BUCKET).remove([user.id+"/"+name]);if(error){showDocumentMessage("Belge silinemedi: "+error.message,true);return;}showDocumentMessage("Belge silindi.");await loadDocuments();}
